@@ -1,0 +1,1236 @@
+/* ===========================================================
+   Oscars Stora Bonanza — "Mogul Money" purple & gold theme
+   =========================================================== */
+
+:root {
+  /* surfaces */
+  --mg-bg-deep: #1b0536;
+  --mg-bg-mid: #3a0b63;
+  --mg-panel: rgba(255, 255, 255, 0.06);
+
+  /* tiles */
+  --mg-tile-top: #8b34f5;
+  --mg-tile-bot: #5d16bd;
+
+  /* gold + cream */
+  --mg-cream: #fbe3b4;
+  --mg-cream-lt: #fff3d6;
+  --mg-gold: #e2b558;
+  --mg-gold-lt: #f6dc9b;
+  --mg-gold-dim: rgba(226, 181, 88, 0.45);
+
+  /* text */
+  --mg-ink: #2b0a4d; /* dark purple, for use on cream */
+  --ink: #f6efff;
+  --ink-soft: #dcc9f5;
+  --ink-dim: #a68fcb;
+
+  --ok: #4fca6a;
+  --bad: #e0524b;
+
+  --radius-lg: 30px;
+
+  /* Height of the fixed player bar. Single source of truth: the board and every
+     overlay reserve this much space so nothing ever hides behind the scores. */
+  --score-h: 8.4rem;
+
+  --font-display: 'Avenir Next Condensed', 'Futura Condensed', 'Arial Narrow', Impact,
+    system-ui, sans-serif;
+  --font-ui: 'Avenir Next', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+
+  --shadow-lift: 0 22px 55px rgba(8, 2, 20, 0.55);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  color: var(--ink);
+  background:
+    radial-gradient(900px 620px at 50% 82%, rgba(140, 50, 240, 0.5) 0%, transparent 62%),
+    radial-gradient(700px 500px at 92% 8%, rgba(150, 30, 170, 0.28) 0%, transparent 60%),
+    linear-gradient(180deg, #240742 0%, var(--mg-bg-mid) 58%, var(--mg-bg-deep) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+input,
+textarea {
+  font-family: inherit;
+}
+
+.app {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- shared bits ---------- */
+
+/* metallic gold lettering — logos, titles.
+   NOTE: use text-shadow, not filter: drop-shadow() — a filter on the same element
+   breaks `background-clip: text` in Chromium and the gradient stops painting. */
+.title-gradient {
+  background: linear-gradient(180deg, #fff8e2 0%, #f3d491 38%, #e2b558 62%, #a9791f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+.rule {
+  height: 1px;
+  background: var(--mg-gold-dim);
+  flex: 0 0 auto;
+}
+
+.btn {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--mg-ink);
+  background: linear-gradient(180deg, #fff5da 0%, #f0cf87 48%, #dcae52 100%);
+  box-shadow: 0 6px 18px rgba(8, 2, 20, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:not(:disabled):hover {
+  filter: brightness(1.06);
+}
+.btn:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 10px rgba(8, 2, 20, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.btn-lg {
+  padding: 0.95rem 2.4rem;
+  font-size: 1.35rem;
+}
+.btn-sm {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--mg-gold-lt);
+  border: 2px solid var(--mg-gold-dim);
+  box-shadow: none;
+}
+.btn-ghost:not(:disabled):hover {
+  border-color: var(--mg-gold);
+  background: rgba(226, 181, 88, 0.1);
+}
+
+.btn-green {
+  color: #06340f;
+  background: linear-gradient(180deg, #c2f7cd, #4fca6a 58%, #2f9e4a);
+}
+.btn-red {
+  color: #fff;
+  background: linear-gradient(180deg, #ffa9a4, #e0524b 58%, #b3332c);
+}
+
+.panel {
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+  border-radius: var(--radius-lg);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.field label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--mg-gold-lt);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.input,
+.textarea {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--mg-gold-dim);
+  border-radius: 12px;
+  color: var(--ink);
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  outline: none;
+}
+.input:focus,
+.textarea:focus {
+  border-color: var(--mg-gold);
+  box-shadow: 0 0 0 2px rgba(226, 181, 88, 0.22);
+}
+.textarea {
+  resize: vertical;
+  min-height: 3.2rem;
+}
+
+/* ---------- topbar (logo left, gold rule under) ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.6rem 0.7rem;
+  border-bottom: 1px solid var(--mg-gold-dim);
+  margin-bottom: 0.9rem;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(1.05rem, 2vw, 1.6rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 0 0 auto;
+}
+.undo-what {
+  margin-left: 0.5rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.round-badge {
+  padding: 0.35rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--mg-gold-dim);
+  color: var(--mg-gold-lt);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+/* ---------- home ---------- */
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.8rem;
+  padding: 2rem;
+  text-align: center;
+}
+.home-logo {
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: 3px;
+}
+.home-tagline {
+  color: var(--mg-cream);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+  margin: 0;
+}
+.home-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: min(340px, 90vw);
+}
+.home-info {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  max-width: 32rem;
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+  border-radius: 16px;
+  padding: 0.8rem 1.2rem;
+}
+
+/* ---------- board ---------- */
+.board-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.4rem calc(var(--score-h) + 0.4rem);
+  min-height: 0;
+}
+.board-head {
+  display: grid;
+  gap: clamp(5px, 0.6vw, 9px);
+  padding-bottom: 0.45rem;
+}
+.cat-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* hug the text like the reference, centered in its column */
+  justify-self: center;
+  max-width: 100%;
+  min-height: 2.5rem;
+  padding: 0.35rem 1.3rem;
+  border: 2px solid var(--mg-gold-dim);
+  border-radius: 999px;
+  color: var(--mg-gold-lt);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.05;
+  font-size: clamp(0.7rem, 1.15vw, 1rem);
+}
+.cat-chip.filled {
+  background: linear-gradient(180deg, #fdf1d2, #f2ce8f);
+  border-color: #fff2cf;
+  color: var(--mg-ink);
+  min-height: 2.6rem;
+  padding: 0.4rem 1.6rem;
+  display: inline-flex;
+  box-shadow: 0 8px 22px rgba(8, 2, 20, 0.45);
+}
+
+.board {
+  flex: 1;
+  display: grid;
+  gap: clamp(5px, 0.6vw, 9px);
+  padding-top: 0.5rem;
+  min-height: 0;
+}
+.board-col {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: clamp(5px, 0.6vw, 9px);
+  min-width: 0;
+}
+
+.tile {
+  position: relative;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: clamp(1.4rem, 3vw, 2.6rem);
+  background: linear-gradient(180deg, var(--mg-tile-top) 0%, var(--mg-tile-bot) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 10px 24px rgba(10, 2, 25, 0.45);
+  min-height: clamp(2.4rem, 6vh, 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.tile:not(:disabled):hover {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+}
+.tile-value {
+  background: linear-gradient(180deg, #fff3d6 0%, #f7d9a4 55%, #edc07c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tile.used {
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(226, 181, 88, 0.14);
+}
+
+.board-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+/* ---------- scoreboard: fixed bar, always on top of every overlay ---------- */
+.scoreboard {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--score-h);
+  z-index: 30; /* above .overlay (20) so scores stay visible during a clue */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--mg-gold-dim);
+  background: linear-gradient(to top, rgba(17, 3, 34, 0.98), rgba(24, 5, 46, 0.9));
+}
+.score-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--mg-panel);
+  border: 2px solid var(--mg-gold-dim);
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem 0.45rem 0.5rem;
+  min-width: 13rem;
+  transition: box-shadow 0.15s ease;
+}
+.score-chip.leader {
+  border-color: var(--mg-gold);
+  box-shadow: 0 0 0 3px rgba(226, 181, 88, 0.4);
+}
+.scoreboard .avatar {
+  width: 4.6rem;
+  height: 4.6rem;
+  font-size: 1.9rem;
+  border-width: 3px;
+  border-radius: 50%;
+}
+.scoreboard .score-name {
+  font-size: 1.35rem;
+  max-width: 11rem;
+}
+.scoreboard .score-value {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.avatar {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--mg-ink);
+  flex: 0 0 auto;
+  border: 2px solid rgba(226, 181, 88, 0.6);
+  overflow: hidden;
+}
+.avatar.lg {
+  width: 5.6rem;
+  height: 5.6rem;
+  font-size: 2.1rem;
+  border-radius: 50%;
+}
+.avatar.xl {
+  width: 8.5rem;
+  height: 8.5rem;
+  font-size: 3.2rem;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+.score-name {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--mg-cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8rem;
+}
+.score-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--mg-gold-lt);
+  font-variant-numeric: tabular-nums;
+  /* the score "pop" animation scales this span — grow rightward into the chip's
+     padding so it can never expand back over the avatar */
+  transform-origin: left center;
+}
+.score-value.neg {
+  color: #ff8a84;
+}
+
+/* ---------- flying points ---------- */
+.fly-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+.fly-points {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* framer animates x/y from the viewport origin; centre the chip on that point */
+  margin: -1.1rem 0 0 -4rem;
+  width: 8rem;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--mg-cream-lt);
+  text-shadow: 0 0 14px rgba(226, 181, 88, 0.9), 0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- overlay / modal ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2vh 2vw calc(2vh + var(--score-h));
+  background:
+    radial-gradient(900px 620px at 50% 85%, rgba(140, 50, 240, 0.35) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(30, 7, 58, 0.97), rgba(18, 4, 36, 0.985));
+}
+
+/* ---------- clue ---------- */
+.clue-card {
+  width: min(1200px, 96vw);
+  max-height: calc(94vh - var(--score-h));
+  overflow: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.clue-head {
+  font-family: var(--font-display);
+  color: var(--mg-gold-lt);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  font-size: 0.95rem;
+}
+.clue-value {
+  font-family: var(--font-display);
+  color: var(--mg-gold-lt);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* the big cream card */
+.clue-panel {
+  width: 100%;
+  background: linear-gradient(160deg, #fdf1d2 0%, #f7dca7 100%);
+  border-radius: 44px;
+  /* kept tight so the card still clears the fixed score bar at 800px tall */
+  padding: clamp(1rem, 2.4vw, 1.8rem) clamp(1.4rem, 4vw, 3rem);
+  min-height: clamp(140px, 22vh, 240px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 20px 50px rgba(8, 2, 20, 0.5);
+  /* min-height:0 lets this flex child actually shrink; overflow keeps long text
+     inside the rounded card instead of bleeding out of it. */
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* Auto margins centre the content when it fits but — unlike justify-content:center —
+   stay scrollable in both directions when it doesn't. */
+.clue-panel-inner {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Length-based step-down: long questions shrink so they still fit on screen,
+   which beats scrolling text out of the audience's view. */
+.clue-panel.text-sm .clue-prompt {
+  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+}
+.clue-panel.text-sm .clue-answer {
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+}
+.clue-panel.text-xs .clue-prompt {
+  font-size: clamp(1.1rem, 2.3vw, 1.7rem);
+}
+.clue-panel.text-xs .clue-answer {
+  font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+}
+
+.clue-prompt {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  color: var(--mg-cream-lt);
+  margin: 0.6rem 0;
+}
+/* inside the cream card: dark purple, much bigger */
+.clue-panel .clue-prompt {
+  color: var(--mg-ink);
+  font-size: clamp(1.9rem, 4.6vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.clue-image {
+  max-width: 100%;
+  max-height: 30vh;
+  border-radius: 18px;
+  margin: 0 auto;
+  display: block;
+}
+
+.clue-answer {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: clamp(2.2rem, 5.4vw, 4rem);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #7cf0a0;
+  margin: 0.6rem 0;
+}
+.clue-panel .clue-answer {
+  color: #15803d;
+  margin: 0;
+}
+
+.clue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+.award-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+}
+.award-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--mg-gold-dim);
+  background: var(--mg-panel);
+  color: var(--ink);
+  border-radius: 18px;
+  padding: 0.5rem 0.75rem 0.6rem;
+  min-width: 5.5rem;
+  transition: transform 0.1s ease, border-color 0.15s ease;
+}
+/* which number key awards this player */
+.key-badge {
+  position: absolute;
+  top: -0.55rem;
+  left: -0.55rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--mg-ink);
+  background: linear-gradient(180deg, #fdf1d2, #e2b558);
+  box-shadow: 0 2px 6px rgba(8, 2, 20, 0.5);
+}
+.key-hint {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.3px;
+}
+.award-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--mg-gold);
+}
+.award-btn .mini-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+.pill {
+  font-family: var(--font-display);
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.22rem 0.65rem;
+  font-size: 0.9rem;
+}
+.pill-plus {
+  background: var(--ok);
+  color: #06340f;
+}
+.pill-minus {
+  background: var(--bad);
+  color: #fff;
+}
+
+/* wrong-answer shake */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(9px);
+  }
+  60% {
+    transform: translateX(-7px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+}
+.shake {
+  animation: shake 0.45s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
+}
+
+/* ---------- final / bet round cards ---------- */
+.final {
+  width: min(980px, 96vw);
+  max-height: calc(94vh - var(--score-h));
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  padding: clamp(1.2rem, 3vw, 2.2rem);
+  text-align: center;
+  background: linear-gradient(170deg, #43107a 0%, #2a0850 62%, #1e063d 100%);
+  border: 2px solid var(--mg-gold-dim);
+  box-shadow: var(--shadow-lift);
+}
+.final-title {
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+}
+.wager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+}
+.wager-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem;
+  border-radius: 16px;
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+}
+.final-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+}
+.final-score-card {
+  padding: 0.8rem;
+  border-radius: 18px;
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+.winner-name {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+}
+
+/* ---------- contestant intros ---------- */
+.intro-overlay {
+  cursor: pointer;
+  z-index: 40; /* the intro covers the score bar too */
+}
+.intro {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 96vw;
+}
+.intro-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  justify-content: center;
+  margin: 1.6rem 0;
+}
+.intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.intro-name {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--mg-cream);
+}
+
+/* ---------- category intro ---------- */
+/* Genuinely full screen: overrides .overlay's score-bar reserve and sits above the
+   fixed score bar, so a category fills the TV on its own. */
+.cat-intro-overlay {
+  cursor: pointer;
+  z-index: 40;
+  padding-bottom: 2vh;
+}
+.cat-intro {
+  width: min(1200px, 94vw);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+.cat-intro-kicker,
+.cat-intro-counter {
+  font-family: var(--font-display);
+  color: var(--mg-gold-lt);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  font-size: 0.95rem;
+}
+.cat-intro-counter {
+  color: var(--ink-dim);
+  letter-spacing: 2px;
+}
+.cat-intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+.cat-intro-name {
+  /* long titles wrap rather than bleeding off the sides of the screen */
+  overflow-wrap: anywhere;
+  font-size: clamp(2.5rem, 9vw, 7rem);
+  line-height: 1.02;
+  font-weight: 700;
+  margin: 0.6rem 0 0;
+}
+.cat-intro-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+}
+/* Keeps the slot's width so the primary button doesn't jump between cards, while
+   staying out of hit-testing so a click there still advances. */
+.cat-intro-nav .is-invisible {
+  visibility: hidden;
+}
+
+/* ---------- podium ---------- */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.2rem;
+  margin: 1.2rem 0 0.4rem;
+}
+.podium-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 7rem;
+}
+.podium-name {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--mg-cream);
+}
+.podium-score {
+  font-family: var(--font-display);
+  color: var(--mg-gold-lt);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.35rem;
+}
+.podium-block {
+  width: 100%;
+  margin-top: 0.3rem;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--mg-gold-dim);
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.podium-col.first .podium-block {
+  background: linear-gradient(180deg, #f3d491, #b98d2c);
+  border-color: #fff2cf;
+}
+.podium-place {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--mg-gold-lt);
+}
+.podium-col.first .podium-place {
+  color: var(--mg-ink);
+}
+
+/* ---------- end-of-night awards ---------- */
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.7rem;
+  margin: 0.6rem 0 0.4rem;
+}
+.award-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 14px;
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+}
+.award-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+  color: var(--mg-gold-lt);
+}
+.award-winner {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--mg-cream);
+}
+
+/* survey final */
+.final-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  margin: 1.2rem 0;
+}
+.finalist-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.vs {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--mg-gold-lt);
+}
+.dup-warn {
+  color: #ff8a84;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.reveal-scores {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+}
+.reveal-scores strong {
+  color: var(--mg-gold-lt);
+  font-variant-numeric: tabular-nums;
+}
+.reveal-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.reveal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 1rem;
+  border-radius: 16px;
+  background: var(--mg-panel);
+  border: 1px solid var(--mg-gold-dim);
+  text-align: left;
+}
+.reveal-row.shown {
+  border-color: var(--mg-gold);
+}
+.reveal-answer {
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+}
+.reveal-answer .pts-good {
+  color: #7cf0a0;
+}
+.reveal-answer .pts-zero {
+  color: var(--ink-dim);
+}
+.hidden-answer {
+  letter-spacing: 3px;
+  color: var(--ink-dim);
+}
+
+/* ---------- editor ---------- */
+.editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.2rem 2rem;
+  gap: 1rem;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.tab {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid var(--mg-gold-dim);
+  background: transparent;
+  color: var(--mg-gold-lt);
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 700;
+}
+.tab.active {
+  background: linear-gradient(180deg, #fdf1d2, #f0cf87);
+  color: var(--mg-ink);
+  border-color: transparent;
+}
+.editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.edit-category {
+  padding: 1rem;
+}
+.edit-cat-head {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+.edit-clues {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.8rem;
+}
+.edit-clue {
+  border: 1px solid var(--mg-gold-dim);
+  border-radius: 14px;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+.edit-clue-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.value-badge {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--mg-gold-lt);
+}
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.player-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  text-align: center;
+}
+.icon-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  border-radius: 10px;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover {
+  background: rgba(224, 82, 75, 0.35);
+}
+.data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 30rem;
+}
+.data-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.hint {
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+.hidden-file {
+  display: none;
+}
+
+/* ---------- settings ---------- */
+.settings {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1rem 2rem 2rem;
+  width: min(600px, 100%);
+  margin: 0 auto;
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+.setting-row > div:first-child {
+  min-width: 0;
+}
+.setting-row .btn {
+  flex: 0 0 auto;
+}
+.toggle {
+  display: inline-flex;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid var(--mg-gold-dim);
+  flex: 0 0 auto; /* never let a long description squeeze the toggle */
+}
+.toggle button {
+  white-space: nowrap;
+}
+.toggle button {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  background: transparent;
+  color: var(--mg-gold-lt);
+  font-weight: 700;
+  padding: 0.4rem 1.1rem;
+}
+.toggle button.on {
+  background: var(--ok);
+  color: #06340f;
+}
+.toggle button.off-active {
+  background: var(--bad);
+  color: #fff;
+}
+
+/* ---------- utils ---------- */
+.center-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.grow {
+  flex: 1;
+}
